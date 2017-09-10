@@ -1,0 +1,23 @@
+{
+  "name": "mysql-no-query",
+  "version": "1.0.0",
+  "description": "A middleware tool to use mysql databases' tables as JavaScript objects",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "mysql",
+    "database",
+    "NodeJS"
+  ],
+  "repository": { 
+    "type" : "git", 
+    "url" : "https://github.com/HassanAzzam/mysql-no-query.git"
+  },
+  "author": "Hassan Azzam",
+  "license": "ISC",
+  "dependencies": {
+    "mysql": "^2.13.0"
+  }
+}
