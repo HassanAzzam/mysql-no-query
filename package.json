@@ -1,7 +1,7 @@
 {
   "name": "mysql-no-query",
   "version": "1.0.0",
-  "description": "A middleware tool to use mysql databases' tables as JavaScript objects",
+  "description": "A middleware tool to use mysql databases' tables as JavaScript objects without writing any queries",
   "main": "index.js",
   "scripts": {
     "test": "node test.js"
