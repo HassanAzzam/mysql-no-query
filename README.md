@@ -8,7 +8,8 @@ A middleware tool to use mysql databases' tables as JavaScript objects without w
 ```sh
 $ npm install mysql-no-query
 ```
----
+
+
 ## Quick Example
 
 ```javascript
@@ -38,7 +39,8 @@ app.get('/api/comments', (req, res) => {
 
 })
 ```
----
+
+
 
 ## Usage
 ### `schema.<table>`
@@ -82,7 +84,8 @@ database.schema.comments.get({
     res.end(JSON.stringify(results))
   })
 ```
----
+
+
 ### `schema.<table>.insert(row, callback)`
 Inserts a new record in the database table. `row` is required
 
@@ -90,7 +93,7 @@ Inserts a new record in the database table. `row` is required
 
 A `Row` object of the table's structure. see [`schema.<table>.row()`](#row-prototype) for more details
 
----
+
 ### `schema.<table>.edit(options, callback)`
 Updates records that are already in the database table. `row` is required
 
@@ -102,7 +105,7 @@ Option | Type | Required | Description
 **where** |`string` | No | adds custom `WHERE` to `UPDATE` statement. If not specified, all records will be updated
 
 
----
+
 ### `schema.<table>.delete(options, callback)`
 Deletes records from the database table. `row` is required
 
@@ -113,7 +116,6 @@ Option | Type | Required | Description
 **where** |`string` | No | adds custom `WHERE` to `DELETE` statement. If not specified, all records will be deleted
 
 
----
 ### `schema.<table>.row(init)`
 Returns a `Row` object of the table's structure with default values
 
@@ -133,7 +135,6 @@ property | Type | Required | Description
 **type** |`enum` | No | Specifies `JOIN` type. applicable values are `LEFT`, `RIGHT`, `INNER` or `FULL OUTER`. defaults to `FULL OUTER` 
 
 
----
 
 ### `Row` Prototype
 Each `schema.<table>.row()` returns a different object depends on the table, but in general each one has a list of properties represents `COLUMNS_NAME`s of the table and each property equals to the default value for its column in the database.
@@ -184,7 +185,8 @@ Deletes this record from the database using the primary keys of the table
     
   })
 ```
----
+
+
 #### `callback`
 A function to be triggered when main function is finished processing. It passes 3 parameters:
 - **error**:  will be an `Error` if one occurred during the query 
