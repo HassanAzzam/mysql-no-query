@@ -57,7 +57,7 @@ Option | Type | Required | Description
 **sort** |`string` | No | adds custom `SORT BY` to `SELECT` statement
 **limit** |`string` | No | adds custom `LIMIT` to `SELECT` statement
 **offset** |`string` | No | adds custom `OFFSET` to `SELECT` statement
-**join** |[`Array<Join>`](#join) | No | adds `JOIN` to `SELECT` statement. Assign it to `'all'` instead of object to join all foreign keys of the table with its references
+**join** |[`Array<Join>`](#join-prototype) | No | adds `JOIN` to `SELECT` statement. Assign it to `'all'` instead of object to join all foreign keys of the table with its references
 
 
 #### Example
@@ -88,7 +88,7 @@ Inserts a new record in the database table. `row` is required
 
 #### `row`
 
-A `Row` object of the table's structure. see [`schema.<table>.row()`](#row) for more details
+A `Row` object of the table's structure. see [`schema.<table>.row()`](#row-prototype) for more details
 
 ---
 ### `schema.<table>.edit(options, callback)`
@@ -191,4 +191,3 @@ A function to be triggered when main function is finished processing. It passes 
 - **results**: will contain the results of the query 
 - **fields**: will contain information about the returned results fields (if any) 
 
----
