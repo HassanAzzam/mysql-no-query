@@ -17,10 +17,11 @@ var express = require('express')
 var app = express()
 
 // Including 'mysql-no-query' package.
-var database = require('mysql-no-query') 
+var mysqlNoQuery = require('mysql-no-query') 
 
 // Connecting to database.
-database.connect({
+var db = new mysqlNoQuery();
+db.connect({
   host: 'localhost',
   user: '<username>',
   password: '<password>',
@@ -33,7 +34,7 @@ app.listen(8888);
 app.get('/api/comments', (req, res) => {
 
   // This code line replaces 'SELECT * FROM comments' query, It gets all rows of 'comments' table.
-  database.schema.comments.get({}, (error, results, fields) => {
+  db.schema.comments.get({}, (error, results, fields) => {
     res.end(JSON.stringify(results))
   })
 
@@ -71,7 +72,7 @@ Equivalent to
 SELECT comments.text, writer.first_name FROM comments JOIN users AS writer ON writer.id = comments.user_id LIMIT 3;
 
 */
-database.schema.comments.get({
+db.schema.comments.get({
     select: 'text',
     limit: 3,
     join: [{ 
@@ -140,7 +141,7 @@ property | Type | Required | Description
 Each `schema.<table>.row()` returns a different object depends on the table, but in general each one has a list of properties represents `COLUMNS_NAME`s of the table and each property equals to the default value for its column in the database.
 
 ```javascript
-console.log(database.schema.comments.row())
+console.log(db.schema.comments.row())
 /*  Outputs
 
 	{ id: null,
@@ -157,10 +158,10 @@ console.log(database.schema.comments.row())
 Updates this record in the database using the primary keys of the table
 ```javascript
 // Gets comment with id = 5.
-  database.schema.comments.get({ where: 'id = 5' }, (error, results, fields) => {
+  db.schema.comments.get({ where: 'id = 5' }, (error, results, fields) => {
 
     // Creates a Row object and initializing it with the data of the retrieved record 
-    var record = database.schema.comments.row(results[0])
+    var record = db.schema.comments.row(results[0])
 
     // Let's change its text
     record.text = 'New Text!'
@@ -175,10 +176,10 @@ Deletes this record from the database using the primary keys of the table
 
 ```javascript
 // Gets comment with id = 5.
-  database.schema.comments.get({ where: 'id = 5' }, (error, results, fields) => {
+  db.schema.comments.get({ where: 'id = 5' }, (error, results, fields) => {
 
     // Creates a Row object and initializing it with the data of the retrieved record 
-    var record = database.schema.comments.row(results[0])
+    var record = db.schema.comments.row(results[0])
     
     // this deletes the record from the database
     record.delete();
