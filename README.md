@@ -55,31 +55,34 @@ Retrieves data from `<table>` depending on specific options and triggers a callb
 #### `options`
 Option | Type | Required | Description
 --- | --- | --- | ---
-**select** |`string` | No | specifies custom `SELECT` statement. defaults to `*`
-**where** |`string` | No | adds custom `WHERE` to `SELECT` statement
+**select** |`Array<string>` | No | list of columns that will be selected by the query. defaults to `*`
+**where** |`Object` or `string`| No | adds custom `WHERE` to `SELECT` statement
 **sort** |`string` | No | adds custom `SORT BY` to `SELECT` statement
 **limit** |`string` | No | adds custom `LIMIT` to `SELECT` statement
 **offset** |`string` | No | adds custom `OFFSET` to `SELECT` statement
-**join** |[`Array<Join>`](#join-prototype) | No | adds `JOIN` to `SELECT` statement. Assign it to `'all'` instead of object to join all foreign keys of the table with its references
+**join** |[`Array<Join>`](#join-prototype)  or `string`| No | adds `JOIN` to `SELECT` statement. Assign `'all'` to it instead of object to join all foreign keys of the table with its references
 
 
 #### Example
 ```javascript
 /* 
-This will select first 3 comments' `text`s and their writer's `first_name`s
+This will select first 3 comments' `text`s and their writer's `first_name`s of a post which has id = 5
 
 Equivalent to 
-SELECT comments.text, writer.first_name FROM comments JOIN users AS writer ON writer.id = comments.user_id LIMIT 3;
+SELECT comments.text, writer.first_name FROM comments JOIN users AS writer ON writer.id = comments.user_id WHERE comments.post_id = 5 LIMIT 3;
 
 */
 db.schema.comments.get({
-    select: 'text',
+    select: ['text'],
+    where: {
+      post_id: 5
+    } // You also can use it like this: (where: 'post_id = 5')
     limit: 3,
     join: [{ 
       with: 'users', 
       as: 'writer', 
       on: 'writer.id = comments.user_id',  
-      select: 'first_name'
+      select: ['first_name']
     }]
   }, (error, results, fields) => {
     res.end(JSON.stringify(results))
@@ -132,7 +135,7 @@ property | Type | Required | Description
 **with** |`string` | Yes | Specifies which table to join with
 **on** |`string` | Yes | Condition to which columns the join will be applied
 **as** |`string` | No | Specifies alias to the joined table
-**select** |`string` | No | specifies which columns to select from the joined table. defaults to `*`
+**select** |`Array<string>` | No | specifies which columns to select from the joined table. defaults to `*`
 **type** |`enum` | No | Specifies `JOIN` type. applicable values are `LEFT`, `RIGHT`, `INNER` or `FULL OUTER`. defaults to `FULL OUTER` 
 
 
@@ -154,6 +157,18 @@ console.log(db.schema.comments.row())
   */
 ```
 
+#### `insert(callback)`
+Inserts this record in the database
+```javascript
+// Creates a new row initialized with `text`, `user_id`, `post_id`.
+  var newRow = db.schema.comments.row({ text: 'Hello from Row.insert()', user_id: 29, post_id: 72 });
+
+  // Inserts the row in the database.
+  newRow.insert((error, results, fields) => {
+    console.log(results.insertId);
+  })
+```
+
 #### `update(callback)`
 Updates this record in the database using the primary keys of the table
 ```javascript
@@ -171,6 +186,7 @@ Updates this record in the database using the primary keys of the table
     
   })
 ```
+
 #### `delete(callback)`
 Deletes this record from the database using the primary keys of the table
 
@@ -194,3 +210,6 @@ A function to be triggered when main function is finished processing. It passes 
 - **results**: will contain the results of the query 
 - **fields**: will contain information about the returned results fields (if any) 
 
+## What's new
+
+- **v1.0.7**: Now you can assign an object to `options.where`, properties of the object will be treated as a column name and its value. All conditions are connected by `AND`. You still can use `options.where` as a string to provide a customized `WHERE` to the query.

@@ -13,5 +13,9 @@ db.connect({
   database: 'hsc_db'
 })
 
-// Specify app port as you like.
-app.listen(8888);
+setTimeout(() => {
+  db.schema.comments.row({ text: '.insert', user_id: 29, post_id: 72 }).insert((err, res, fields) => {
+    console.log(res);
+  })
+},
+1000)

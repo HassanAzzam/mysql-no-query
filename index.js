@@ -96,6 +96,10 @@ var initTable = function () {
           if (ret.hasOwnProperty(i) && init.hasOwnProperty(i)) ret[i] = init[i];
         }
 
+        ret.insert = function (callback) {
+          _table.insert(this, callback)
+        };
+
         ret.update = function (callback) {
           var set = '';
           for (var i in this) {
@@ -135,9 +139,14 @@ var initTable = function () {
 var get = (table, options, callback) => {
   var joinAll = options.join == 'all';
 
-  var select = options.select || '*';
-  if (!joinAll)
-    select = table.name + '.' + select.replace(' ', '').replace(',', `, ${table.name}.`);
+  var select = table.name + '.*';
+  if (!joinAll && Array.isArray(options.select)){
+    select = '';
+    options.select.forEach((el) => {
+      select += `,${(options.join)?table.name+'.':''}${el}`;
+    })
+    select = select.slice(1);
+  }
 
   options.join = (joinAll && table.indexes) || options.join || [];
   var join = '';
@@ -147,17 +156,35 @@ var get = (table, options, callback) => {
     join += `${indx.type} JOIN ${indx.with} ${((indx.as) ? 'AS ' + indx.as : '')} ON ${indx.on} `;
 
     if (joinAll) continue;
-    indx.select = indx.select || '*';
-    indx.select = indx.select.replace(' ', '').replace(',', `, ${options.join.as || options.join.with}.`);
-    select += `${(select.length) ? ',' : ''}${indx.as || indx.with}.${indx.select}`;
+    if(Array.isArray(indx.select)){
+      indx.select.forEach((el) => {
+        select += `,${indx.as || indx.with}.${el}`;
+      })
+    }
+    else
+    select += `,${indx.as || indx.with}.*`;
   }
 
-  table.connection.query(`SELECT ${select} FROM ${table.name} 
-${join} 
-${options.where ? 'WHERE ' + options.where : ''} 
-${options.sort ? 'SORT BY ' + options.sort : ''} 
-${options.limit ? 'LIMIT ' + options.limit : ''} 
-${options.offset ? 'OFFSET ' + options.offset : ''}`,
+  if(options.where != null && typeof options.where == 'object'){
+    var where = '';
+    for (var i in options.where) {
+      if (!options.where.hasOwnProperty(i) || typeof options.where[i] == 'function' || options.where[i] == undefined) continue;
+      if (where.length) where += ' AND ';
+      where += i + ' = ';
+      if (options.where[i] == null) where += options.where[i];
+      else where += `"${options.where[i]}"`;
+    }
+    options.where = where;
+  }
+
+  var sql =`SELECT ${select} FROM ${table.name} 
+  ${join} 
+  ${options.where ? 'WHERE ' + options.where : ''} 
+  ${options.sort ? 'ORDER BY ' + options.sort : ''} 
+  ${options.limit ? 'LIMIT ' + options.limit : ''} 
+  ${options.offset ? 'OFFSET ' + options.offset : ''}`;
+  //console.log(sql);
+  table.connection.query(sql,
     callback)
 };
 
